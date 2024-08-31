@@ -1,6 +1,66 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
-class AdminLogin extends StatelessWidget {
+class AdminLogin extends StatefulWidget {
+  @override
+  _AdminLoginState createState() => _AdminLoginState();
+}
+
+class _AdminLoginState extends State<AdminLogin> {
+  bool _isOTPSent = false;
+  int _remainingTime = 20;
+  Timer? _timer;
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _pinController = TextEditingController();
+  final TextEditingController _otpController = TextEditingController();
+
+  void _startTimer() {
+    _remainingTime = 20; // reset the timer
+    _timer?.cancel(); // cancel any existing timer
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_remainingTime > 0) {
+          _remainingTime--;
+        } else {
+          _timer?.cancel();
+          _isOTPSent = false;
+        }
+      });
+    });
+  }
+
+  void _sendOTP() {
+    if (_emailController.text.isEmpty ||
+        _pinController.text.isEmpty) {
+      _showErrorMessage("Please enter all details.");
+      return;
+    }
+
+    setState(() {
+      _isOTPSent = true;
+    });
+    _startTimer();
+  }
+
+  void _showErrorMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // cancel the timer when the widget is disposed
+    _emailController.dispose();
+    _pinController.dispose();
+    _otpController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,6 +157,7 @@ class AdminLogin extends StatelessWidget {
                       ),
                       SizedBox(height: 20),
                       TextField(
+                        controller: _emailController,
                         decoration: InputDecoration(
                           labelText: "Admin Email",
                           prefixIcon: Icon(Icons.language, color: Colors.white),
@@ -107,6 +168,7 @@ class AdminLogin extends StatelessWidget {
                       ),
                       SizedBox(height: 10),
                       TextField(
+                        controller: _pinController,
                         decoration: InputDecoration(
                           labelText: "Company Pin",
                           prefixIcon: Icon(Icons.person, color: Colors.white),
@@ -117,6 +179,7 @@ class AdminLogin extends StatelessWidget {
                       ),
                       SizedBox(height: 10),
                       TextField(
+                        controller: _otpController,
                         decoration: InputDecoration(
                           labelText: "OTP",
                           prefixIcon: Icon(Icons.lock, color: Colors.white),
@@ -126,18 +189,22 @@ class AdminLogin extends StatelessWidget {
                         style: TextStyle(color: Colors.white),
                       ),
                       SizedBox(height: 10),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: GestureDetector(
-                          onTap: () {
-                            // Resend OTP functionality
-                          },
-                          child: Text(
-                            "Resend otp",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                      ElevatedButton(
+                        onPressed: _isOTPSent
+                            ? null
+                            : _sendOTP, // Disable button if OTP is sent
+                        child: Text(
+                          _isOTPSent ? "Resend OTP in $_remainingTime s" : "Send OTP",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _isOTPSent ? Colors.grey : Colors.orange,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 50,
+                            vertical: 15,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                       ),
