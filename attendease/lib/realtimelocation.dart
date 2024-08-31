@@ -12,7 +12,7 @@ class _RealTimeLocationMapWithPolylineState
     extends State<RealTimeLocationMapWithPolyline> {
   GoogleMapController? _controller;
   Location _location = Location();
-  LatLng _initialPosition = LatLng(37.7749, -122.4194); // Default to San Francisco
+  LatLng _initialPosition = LatLng(37.7749, -122.4194);
   List<LatLng> _polylineCoordinates = [];
   Polyline _polyline = Polyline(polylineId: PolylineId("route"));
 
