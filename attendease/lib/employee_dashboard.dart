@@ -1,4 +1,6 @@
 import 'package:attendease/attendance_log.dart';
+import 'package:attendease/landing.dart';
+import 'package:attendease/landing_page.dart';
 import 'package:flutter/material.dart';
 
 
@@ -180,7 +182,10 @@ class EmployeeDashboard extends StatelessWidget {
                   ),
                 ),
                 trailing: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                     Navigator.push(context, MaterialPageRoute(builder: (context)=>( LandingPage1())));
+                       
+                  },
                   child: const Text('Manual Check in'),
                 ),
               ),
